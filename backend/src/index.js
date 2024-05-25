@@ -8,6 +8,9 @@ import {
   apiResponse,
   useNameGenerator,
   authTokenGenerator,
+  passwordRegex,
+  emailRegex,
+  verifyAuthToken,
 } from "./constats/constat.js";
 import bcrypt from "bcryptjs";
 
@@ -23,6 +26,21 @@ connectDb();
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
   try {
+    // Validate the email and password
+    if (!emailRegex.test(email)) {
+      return apiResponse(res, {
+        status: 400,
+        error: "Invalid email format",
+      });
+    }
+
+    if (!passwordRegex.test(password)) {
+      return apiResponse(res, {
+        status: 400,
+        error:
+          "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character",
+      });
+    }
     // hashing the password
     let hashedPassword = await bcrypt.hash(
       password + process.env.BCRYPT_STR,
@@ -88,6 +106,36 @@ app.post("/login", async (req, res) => {
   }
 });
 
+//3. get user
+app.get("/user/get", async (req, res) => {
+  const token = req.headers["authorization"];
+  if (!token) {
+    return apiResponse(res, {
+      status: 404,
+      error: "Auth Token not found",
+    });
+  }
+  try {
+    const decoded = verifyAuthToken(token);
+    const user = await User.findById(decoded.userId).select("-password"); // Exclude the password
+    if (!user) {
+      return apiResponse(res, {
+        status: 404,
+        error: "User not found",
+      });
+    }
+    return apiResponse(res, {
+      status: 200,
+      result: user,
+    });
+  } catch (error) {
+    console.log("B - Error while get user data ::", error);
+    return apiResponse(res, {
+      status: 401,
+      error: "Invalid token",
+    });
+  }
+});
 app.listen(PORT, () => {
   console.log("server is runing on port", PORT);
 });

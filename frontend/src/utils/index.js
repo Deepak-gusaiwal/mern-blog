@@ -1,5 +1,6 @@
 import axios from "axios";
+import { apiBaseUrl } from "./env";
 
 export const Axios = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: apiBaseUrl,
 });

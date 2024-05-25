@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Input } from "./helper";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -8,15 +8,23 @@ import {
   AiOutlineMail,
   AiOutlineLock,
   AiOutlineGoogle,
+  AiTwotoneEye,
+  AiTwotoneEyeInvisible,
 } from "react-icons/ai";
 import { AnimationWrapper } from "./index";
 import { Axios } from "../utils";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { toggleIsLoading } from "../redux/basicSlice";
+import { storeInSession } from "../utils/session";
+import { storeLogin } from "../redux/userSlice";
 
 const AuthForm = ({ type }) => {
   const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
+  const eyeClick = () => {
+    setShowPassword(!showPassword);
+  };
   const {
     register,
     handleSubmit,
@@ -33,6 +41,17 @@ const AuthForm = ({ type }) => {
         const { data } = await Axios.post("/login", { email, password });
         if (data.success) {
           toast.success("you have login successfully");
+          storeInSession("token", data.result);
+          // now fetch and store user
+          const {
+            data: { result },
+          } = await Axios.get("/user/get", {
+            headers: {
+              Authorization: data.result,
+            },
+          });
+          dispatch(storeLogin({ ...result }));
+          console.log("fetched data", result);
         } else {
           toast.error(data.error);
         }
@@ -102,11 +121,14 @@ const AuthForm = ({ type }) => {
               message: "password can't be less than 6 charachters",
             },
           })}
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Enter Password"
           className="bg-slate-200 w-full mb-2"
           error={errors.password}
-        />
+          eyeClick={eyeClick}
+        >
+          {showPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
+        </Input>
         {type != "login" && (
           <Input
             icon={<AiOutlineLock size={"1.4rem"} />}
@@ -116,11 +138,14 @@ const AuthForm = ({ type }) => {
                 return value === password || "Passwords do not match";
               },
             })}
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Confim Password"
             className="bg-slate-200 w-full mb-2"
             error={errors.cpassword}
-          />
+            eyeClick={eyeClick}
+          >
+            {showPassword ? <AiTwotoneEyeInvisible /> : <AiTwotoneEye />}
+          </Input>
         )}
 
         <Button className="btn1 mb-2 mx-auto">
@@ -143,7 +168,7 @@ const AuthForm = ({ type }) => {
           </p>
         )}
         <Button className="w-fit px-4 text-white bg-zinc-800 gap-2 justify-center items-center mb-2 mx-auto hover:bg-zinc-700 mt-1">
-          <AiOutlineGoogle size="1.4rem" /> Signup With Google
+          <AiOutlineGoogle size="1.4rem" /> Continue With Google
         </Button>
       </form>
     </AnimationWrapper>
