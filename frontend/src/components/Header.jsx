@@ -35,16 +35,20 @@ const Header = () => {
               Blogs
             </Link>
           </li>
-          <li>
-            <Link onClick={navHandler} to="/media">
-              media
-            </Link>
-          </li>
-          <li>
-            <Link onClick={navHandler} to="/write">
-              write
-            </Link>
-          </li>
+          {isLogin && (
+            <>
+              <li>
+                <Link onClick={navHandler} to="/media">
+                  media
+                </Link>
+              </li>
+              <li>
+                <Link onClick={navHandler} to="/write">
+                  write
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
         <div className="flex gap-2 items-center">
           {isLogin ? (

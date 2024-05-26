@@ -34,10 +34,18 @@ export const useFetchAndStoreUser = () => {
 export const useStoreLogout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleLogout = () => {
-    clearSession();
-    dispatch(storeLogout());
-    navigate("/login");
+  const handleLogout = async () => {
+    dispatch(toggleIsLoading(true));
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      clearSession(); // Clear the session
+      dispatch(storeLogout()); // Dispatch the logout action
+      navigate("/login"); // Navigate to the login page
+    } catch (error) {
+      console.error("F - Logout failed::", error);
+    } finally {
+      dispatch(toggleIsLoading(false));
+    }
   };
 
   return handleLogout;
