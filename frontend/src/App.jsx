@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Header, Loading } from "./components/index";
 import { Home, Login, Signup, Media, Protected } from "./pages/index";
 import { useSelector } from "react-redux";
+import { useFetchAndStoreUser } from "./hooks";
 const App = () => {
   const { isLoading } = useSelector((state) => state.basicSlice);
+  const fetchAndStoreUser = useFetchAndStoreUser();
+  useEffect(() => {
+    fetchAndStoreUser();
+  }, []);
   return (
     <>
       {isLoading && <Loading />}

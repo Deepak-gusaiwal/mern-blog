@@ -6,8 +6,11 @@ import { toggleNav } from "../redux/basicSlice";
 // icons
 import { RxCross2 } from "react-icons/rx";
 import { HiBars2 } from "react-icons/hi2";
+import { useStoreLogout } from "../hooks";
 const Header = () => {
   const { isNavOpen } = useSelector((state) => state.basicSlice);
+  const { isLogin } = useSelector((state) => state.userSlice.userData);
+  const handleLogout = useStoreLogout();
   const dispatch = useDispatch();
 
   const navHandler = () => {
@@ -23,29 +26,41 @@ const Header = () => {
           }`}
         >
           <li>
-            <Link onClick={navHandler} to="/">Home</Link>
+            <Link onClick={navHandler} to="/">
+              Home
+            </Link>
           </li>
           <li>
-            <Link onClick={navHandler} to="/blogs">Blogs</Link>
+            <Link onClick={navHandler} to="/blogs">
+              Blogs
+            </Link>
           </li>
           <li>
-            <Link onClick={navHandler} to="/media">media</Link>
+            <Link onClick={navHandler} to="/media">
+              media
+            </Link>
           </li>
           <li>
-            <Link onClick={navHandler} to="/write">write</Link>
+            <Link onClick={navHandler} to="/write">
+              write
+            </Link>
           </li>
         </ul>
         <div className="flex gap-2 items-center">
-          <Button className="btn1" to="/login">
-            Login
-          </Button>
-          <Button className="btn2" to="/signup">
-            Signup
-          </Button>
-          <Button className="btn1 hidden" to="/logout">
-            logout
-          </Button>
-
+          {isLogin ? (
+            <Button className="btn1 " onClick={handleLogout}>
+              logout
+            </Button>
+          ) : (
+            <>
+              <Button className="btn1" to="/login">
+                Login
+              </Button>
+              <Button className="btn2" to="/signup">
+                Signup
+              </Button>
+            </>
+          )}
           <button
             onClick={navHandler}
             className="bg-zinc-300 border-2 border-zinc-500 hover:bg-zinc-200 p-2 rounded-full md:hidden"

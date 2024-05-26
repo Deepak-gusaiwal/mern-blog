@@ -18,10 +18,13 @@ import { useDispatch } from "react-redux";
 import { toggleIsLoading } from "../redux/basicSlice";
 import { storeInSession } from "../utils/session";
 import { storeLogin } from "../redux/userSlice";
+import { useFetchAndStoreUser } from "../hooks";
+import { tokenName } from "../utils/env";
 
 const AuthForm = ({ type }) => {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  const fetchAndStoreUser = useFetchAndStoreUser();
   const eyeClick = () => {
     setShowPassword(!showPassword);
   };
@@ -41,17 +44,8 @@ const AuthForm = ({ type }) => {
         const { data } = await Axios.post("/login", { email, password });
         if (data.success) {
           toast.success("you have login successfully");
-          storeInSession("token", data.result);
-          // now fetch and store user
-          const {
-            data: { result },
-          } = await Axios.get("/user/get", {
-            headers: {
-              Authorization: data.result,
-            },
-          });
-          dispatch(storeLogin({ ...result }));
-          console.log("fetched data", result);
+          storeInSession(tokenName, data.result);
+          fetchAndStoreUser();
         } else {
           toast.error(data.error);
         }
