@@ -37,7 +37,7 @@ export const useStoreLogout = () => {
   const handleLogout = async () => {
     dispatch(toggleIsLoading(true));
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       clearSession(); // Clear the session
       dispatch(storeLogout()); // Dispatch the logout action
       navigate("/login"); // Navigate to the login page
