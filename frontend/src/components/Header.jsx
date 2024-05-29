@@ -43,6 +43,11 @@ const Header = () => {
                 </Link>
               </li>
               <li>
+                <Link onClick={navHandler} to="/profile">
+                Profile
+                </Link>
+              </li>
+              <li>
                 <Link onClick={navHandler} to="/write">
                   write
                 </Link>
