@@ -1,12 +1,12 @@
 export const storeInSession = (key, value) => {
-  return sessionStorage.setItem(key, JSON.stringify(value));
+  return localStorage.setItem(key, JSON.stringify(value));
 };
 export const lookInSession = (key) => {
-  return JSON.parse(sessionStorage.getItem(key));
+  return JSON.parse(localStorage.getItem(key));
 };
 export const removeFromSession = (key) => {
-  return sessionStorage.removeItem(key);
+  return localStorage.removeItem(key);
 };
 export const clearSession = () => {
-  return sessionStorage.clear();
+  return localStorage.clear();
 };

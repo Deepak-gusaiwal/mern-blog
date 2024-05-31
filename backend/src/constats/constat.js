@@ -29,7 +29,7 @@ export const useNameGenerator = async ({ email = null, name = null }) => {
 // 3. authToken Generator
 export const authTokenGenerator = (
   data = null,
-  options = { expiresIn: "1h" }
+  options = { expiresIn: "1hr" }
 ) => {
   if (!data)
     throw new Error("Error In AuthTokenGenerator :: Auth Data is Not Passed");
