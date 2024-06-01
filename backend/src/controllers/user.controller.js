@@ -1,5 +1,5 @@
 import { emailRegex, passwordRegex } from "../utils/constat.js";
-import { apiResponse, userNameGenerator, BCRYPT, JWT } from "../utils/index.js";
+import { apiResponse, userNameGenerator } from "../utils/index.js";
 import User from "../models/user.model.js";
 //1 .signup user
 export const signup = async (req, res) => {
@@ -19,8 +19,6 @@ export const signup = async (req, res) => {
           "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character",
       });
     }
-    // hashing the password
-    let hashedPassword = await BCRYPT.hashPassword(password);
     // if there has no name means user signup using google auth
     let userName;
     name
@@ -30,12 +28,12 @@ export const signup = async (req, res) => {
     const user = await new User({
       name: userName,
       email,
-      password: hashedPassword,
+      password,
     });
     const result = await user.save();
     //  Generating Auth Token
     return apiResponse(res, {
-      result: JWT.authTokenGenerator(result._id),
+      result: user.generateJWT(),
       status: 200,
     });
   } catch (error) {
@@ -62,21 +60,15 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    let user;
-    const isEmailExits = await User.findOne({ email });
-    if (!isEmailExits) {
+    const user = await User.findOne({ email });
+    if (!user) {
       return apiResponse(res, { status: 404, error: "Invalid Credentials" });
-    } else {
-      user = isEmailExits;
     }
-    const isPasswordMatch = await BCRYPT.comparePassword(
-      password,
-      user.password
-    );
+    const isPasswordMatch = await user.matchPassword(password);
     return isPasswordMatch
       ? apiResponse(res, {
           status: 200,
-          result: JWT.authTokenGenerator(user._id),
+          result: user.generateJWT(),
         })
       : apiResponse(res, { status: 404, error: "Invalid Credentials" });
   } catch (error) {
