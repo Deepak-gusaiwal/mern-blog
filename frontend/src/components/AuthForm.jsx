@@ -17,7 +17,6 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { toggleIsLoading } from "../redux/basicSlice";
 import { storeInSession } from "../utils/session";
-import { storeLogin } from "../redux/userSlice";
 import { useFetchAndStoreUser } from "../hooks";
 import { tokenName } from "../utils/env";
 
@@ -41,7 +40,7 @@ const AuthForm = ({ type }) => {
       dispatch(toggleIsLoading(true));
       if (type == "login") {
         //1. handle login routes
-        const { data } = await Axios.post("/login", { email, password });
+        const { data } = await Axios.post("/users/login", { email, password });
         if (data.success) {
           toast.success("you have login successfully");
           storeInSession(tokenName, data.result);
@@ -51,9 +50,11 @@ const AuthForm = ({ type }) => {
         }
       } else {
         //2. handle signup routes
-        const { data } = await Axios.post("/signup", { name, email, password });
+        const { data } = await Axios.post("/users/signup", { name, email, password });
         if (data.success) {
           toast.success("you have signup successfully");
+          storeInSession(tokenName, data.result);
+          fetchAndStoreUser();
         } else {
           toast.error(data.error);
         }
