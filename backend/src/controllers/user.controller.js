@@ -30,10 +30,9 @@ export const signup = async (req, res) => {
       email,
       password,
     });
-    const result = await user.save();
-    //  Generating Auth Token
+    await user.save();
     return apiResponse(res, {
-      result: user.generateJWT(),
+      authToken:user.generateJWT(),
       status: 200,
     });
   } catch (error) {
@@ -68,7 +67,7 @@ export const login = async (req, res) => {
     return isPasswordMatch
       ? apiResponse(res, {
           status: 200,
-          result: user.generateJWT(),
+          authToken: user.generateJWT(),
         })
       : apiResponse(res, { status: 404, error: "Invalid Credentials" });
   } catch (error) {

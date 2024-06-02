@@ -3,4 +3,5 @@ import { apiBaseUrl } from "./env";
 
 export const Axios = axios.create({
   baseURL: apiBaseUrl,
+  withCredentials: true,
 });
